@@ -23,15 +23,17 @@
 module regfile(
     input              rst_n,
     input              clk,
-    
+    // å†™å…¥ç«¯å£
     input [4:0]        waddr,
     input [31:0]       wdata,
     input              we,
     
+    // è¯»å–ç«¯å£1
     input [4:0]        raddr1,
     input              re1,
     output reg [31:0]  rdata1,
     
+    // è¯»å–ç«¯å£2
     input [4:0]        raddr2,
     input              re2,
     output reg [31:0]  rdata2
@@ -39,27 +41,30 @@ module regfile(
     
 reg [31:0] mem_r [0:31];
 
-always @ (posedge clk or negedge rst_n) begin      //Ğ´Èë¼Ä´æÆ÷
+// å†™å…¥å¯„å­˜å™¨
+always @ (posedge clk or negedge rst_n) begin
     if(rst_n) begin
         if((waddr != 5'b0) && (we))
             mem_r[waddr] <= wdata;
     end
 end
 
-always @ (*) begin                                 //´Ó¶Ë¿Ú1¶Á³öÊı¾İ
+// ä»ç«¯å£ 1 è¯»å–æ•°æ®
+always @ (*) begin                
     if(~rst_n)
         rdata1 <= 32'b0;
     else if(raddr1 == 5'b0)
         rdata1 <= 32'b0;
-    else if((raddr1 == waddr) && re1 && we)        //Èç¹ûĞ´ÈëµÄµØÖ·ÓëÒª¶Á³öµÄµØÖ·ÏàÍ¬
-        rdata1 <= wdata;                           //ÔòÖ±½Ó½«Ğ´ÈëÊı¾İ¶Á³ö
+    else if((raddr1 == waddr) && re1 && we)        // å¦‚æœå†™å…¥çš„åœ°å€ä¸è¦è¯»å‡ºçš„åœ°å€ç›¸åŒ
+        rdata1 <= wdata;                           // åˆ™ç›´æ¥å°†å†™å…¥çš„æ•°æ®ä¼ ç»™è¯»å‡ºç«¯å£
     else if(re1)
         rdata1 <= mem_r[raddr1];
     else
         rdata1 <= 32'b0;
 end
 
-always @ (*) begin                                 //´Ó¶Ë¿Ú2¶Á³öÊı¾İ
+// ä»ç«¯å£ 2 è¯»å–æ•°æ®
+always @ (*) begin
     if(~rst_n)
         rdata2 <= 32'b0;
     else if(raddr2 == 5'b0)

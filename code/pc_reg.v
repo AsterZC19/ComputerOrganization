@@ -21,18 +21,21 @@
 
 
 module pc_reg(
-    input              clk,
-    input              rst_n,
-    output reg [31:0]  pc,
-    output reg         ce
+    input              clk,     // clock
+    input              rst_n,   // reset
+    output reg [31:0]  pc,      // program counter
+    output reg         ce       // clock enable
     );
 
+
+// posedge: positive edge, negedge: negative edge
 always @ (posedge clk or negedge rst_n) begin
     if(~rst_n)
-        ce <= 1'b0;
+        ce <= 1'b0;     // reset is active, ce is 0, pc is 0
     else
-        ce <= 1'b1;      
+        ce <= 1'b1;     // reset is inactive, ce is 1, pc is incremented by 4
 end
+
 
 always @ (posedge clk) begin
     if(~ce)

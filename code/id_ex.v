@@ -29,7 +29,7 @@ module id_ex(
         input [31:0]         id_reg1,
         input [31:0]         id_reg2,
         input [4:0]          id_wd,
-        input                id_wreg,               //Ä¿µÄ¼Ä´æÆ÷Ê¹ÄÜ
+        input                id_wreg,               // ç›®çš„å¯„å­˜å™¨ä½¿èƒ½
         
         output reg [6:0]     ex_aluop,
         output reg [2:0]     ex_alusel,

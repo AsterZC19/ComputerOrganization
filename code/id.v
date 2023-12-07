@@ -24,15 +24,18 @@ module id(
         input             rst_n,
         input [31:0]      pc_i,
         input [31:0]      inst_i,
-        //¶ÁÈ¡register 
+        
+        // è¯»å–å¯„å­˜å™¨
         input [31:0]      reg1_data_i,
         input [31:0]      reg2_data_i,
-        //Êä³öµ½regfile
+        
+        // è¾“å‡ºåˆ° regfile
         output reg        reg1_read_o,
         output reg        reg2_read_o,
         output reg [4:0]  reg1_addr_o,
         output reg [4:0]  reg2_addr_o,
-        //ËÍ³öµ½Ö´ĞĞÄ£¿é
+        
+        // é€å‡ºåˆ°æ‰§è¡Œæ¨¡å—
         output reg [6:0]  aluop_o,
         output reg [2:0]  alusel_o,
         output reg [31:0] reg1_o,
@@ -40,7 +43,7 @@ module id(
         output reg [4:0]  wd_o,
         output reg        wreg_o,
         
-//½â¾öÁ÷Ë®Ïß³åÍ»
+        // è§£å†³æµæ°´çº¿å†²çª
         input             ex_wreg_i,
         input [31:0]      ex_wdata_i,
         input [4:0]       ex_wd_i,
@@ -50,8 +53,8 @@ module id(
         input [4:0]       mem_wd_i
     );
 
-wire [6:0] op  = inst_i[6:0];            //ÔËËãÀàĞÍ
-wire [2:0] op1 = inst_i[14:12];          //¾ßÌåÔËËã·½Ê½
+wire [6:0] op  = inst_i[6:0];            // è¿ç®—ç±»å‹
+wire [2:0] op1 = inst_i[14:12];          // å…·ä½“è¿ç®—æ–¹å¼
 
 reg [31:0] imm;
 
@@ -70,8 +73,8 @@ always @ (*) begin
     else begin
         aluop_o <= 0;
         alusel_o <= 0;
-        wd_o <= inst_i[11:7];                     //Ä¿µÄ¼Ä´æÆ÷µØÖ·
-        wreg_o <= 1'b1;                           //Ä¿µÄ¼Ä´æÆ÷Ê¹ÄÜ
+        wd_o <= inst_i[11:7];                     // ç›®çš„å¯„å­˜å™¨åœ°å€
+        wreg_o <= 1'b1;                           // ç›®çš„å¯„å­˜å™¨å†™ä½¿èƒ½
         reg1_read_o <= 0;
         reg2_read_o <= 0;
         reg1_addr_o <= inst_i[19:15];
@@ -79,32 +82,32 @@ always @ (*) begin
         imm <= 0;
         
         case(op)
-            7'b0010011: begin                               //Á¢¼´Êı²Ù×÷
+            7'b0010011: begin                               //ç«‹å³æ•°æ“ä½œ
                 case (op1)
-                    3'b000,3'b100,3'b110,3'b111: begin      //addi,xori,ori,andi
-                        wreg_o <= 1'b1;                     //ÊÇ·ñĞ´Ä¿µÄ¼Ä´æÆ÷
-                        aluop_o <= op;                      //ÔËËãÀàĞÍ
-                        alusel_o <= op1;                    //ÔËËã·½Ê½
-                        reg1_read_o <= 1'b1;                //ÊÇ·ñ¶Á²Ù×÷Êı1
-                        reg2_read_o <= 1'b0;                //ÊÇ·ñ¶Á²Ù×÷Êı2
-                        imm <= {{20{inst_i[31]}} , inst_i[31:20]};  //Á¢¼´ÊıÀ©Õ¹
+                    3'b000,3'b100,3'b110,3'b111: begin      // addi,xori,ori,andi
+                        wreg_o <= 1'b1;                     // æ˜¯å¦å†™ç›®çš„å¯„å­˜å™¨
+                        aluop_o <= op;                      // è¿ç®—ç±»å‹
+                        alusel_o <= op1;                    // è¿ç®—æ–¹å¼
+                        reg1_read_o <= 1'b1;                // æ˜¯å¦è¯»æ“ä½œæ•°1
+                        reg2_read_o <= 1'b0;                // æ˜¯å¦è¯»æ“ä½œæ•°2
+                        imm <= {{20{inst_i[31]}} , inst_i[31:20]};  // ç«‹å³æ•°æ‰©å±•
                     end
-                    3'b001: begin                           //slli
-                        wreg_o <= 1'b1;                     //ÊÇ·ñĞ´Ä¿µÄ¼Ä´æÆ÷
-                        aluop_o <= op;                      //ÔËËãÀàĞÍ
-                        alusel_o <= op1;                    //ÔËËã·½Ê½
-                        reg1_read_o <= 1'b1;                //ÊÇ·ñ¶Á²Ù×÷Êı1
-                        reg2_read_o <= 1'b0;                //ÊÇ·ñ¶Á²Ù×÷Êı2
-                        imm <= inst_i[24:20];               //ÒÆÎ»Á¿
+                    3'b001: begin                           // slli
+                        wreg_o <= 1'b1;                     // æ˜¯å¦å†™ç›®çš„å¯„å­˜å™¨
+                        aluop_o <= op;                      // è¿ç®—ç±»å‹
+                        alusel_o <= op1;                    // è¿ç®—æ–¹å¼
+                        reg1_read_o <= 1'b1;                // æ˜¯å¦è¯»æ“ä½œæ•°1
+                        reg2_read_o <= 1'b0;                // æ˜¯å¦è¯»æ“ä½œæ•°2
+                        imm <= inst_i[24:20];               // ç§»ä½é‡
                     end
                     default: begin
                     end
                 endcase
             end
             
-            7'b0110011: begin                                 //ÔËËã²Ù×÷
+            7'b0110011: begin                                 // è¿ç®—æ“ä½œ
                 case(op1)
-                    3'b000,3'b001,3'b100,3'b110,3'b111: begin //add,sll,xor,or,and
+                    3'b000,3'b001,3'b100,3'b110,3'b111: begin // add,sll,xor,or,and
                         wreg_o <= 1'b1;
                         aluop_o <= op;
                         alusel_o <= op1;
@@ -124,11 +127,11 @@ end
 always @ (*) begin
     if(~rst_n)
         reg1_o <= 0;
-    else if((reg1_read_o) && (ex_wreg_i) && (ex_wd_i == reg1_addr_o))     //Èç¹ûÖ´ĞĞ½×¶ÎµÄÊı¾İÎªÒëÂë½×¶ÎËùÒª
-                                                                          //¶ÁÈ¡µÄÊı¾İÔòÖ±½Ó½«ÆäËÍ»ØÒëÂë½×¶Î
+    else if((reg1_read_o) && (ex_wreg_i) && (ex_wd_i == reg1_addr_o))     // å¦‚æœæ‰§è¡Œé˜¶æ®µçš„æ•°æ®ä¸ºè¯‘ç é˜¶æ®µæ‰€è¦
+                                                                          // è¯»å–çš„æ•°æ®åˆ™ç›´æ¥å°†å…¶é€å›è¯‘ç é˜¶æ®µ
         reg1_o <= ex_wdata_i;
-    else if((reg1_read_o) && (mem_wreg_i) && (mem_wd_i == reg1_addr_o))   //Èç¹û·Ã´æ½×¶ÎµÄÊı¾İÎªÒëÂë½×¶ÎËùÒª
-                                                                          //¶ÁÈ¡µÄÊı¾İÔòÖ±½Ó½«ÆäËÍ»ØÒëÂë½×¶Î
+    else if((reg1_read_o) && (mem_wreg_i) && (mem_wd_i == reg1_addr_o))   // å¦‚æœè®¿å­˜é˜¶æ®µçš„æ•°æ®ä¸ºè¯‘ç é˜¶æ®µæ‰€è¦
+                                                                          // è¯»å–çš„æ•°æ®åˆ™ç›´æ¥å°†å…¶é€å›è¯‘ç é˜¶æ®µ
         reg1_o <= mem_wdata_i;
         
     else if(reg1_read_o)

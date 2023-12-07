@@ -36,14 +36,14 @@ module ex(
 
 reg [31:0] result;
 
-always @ (*) begin         //Í¨¹ıÒëÂë½×¶Î·¢ËÍ¹ıÀ´µÄĞÅÏ¢È·¶¨¾ßÌåµÄÔËËã²Ù×÷
+always @ (*) begin         // é€šè¿‡è¯‘ç é˜¶æ®µå‘é€è¿‡æ¥çš„ä¿¡æ¯ç¡®å®šå…·ä½“çš„é¢„ç®—æ“ä½œ
     if(~rst_n)
         result <= 0;
     else begin
         case(aluop_i)
             7'b0010011: begin
                 case(alusel_i)
-                    3'b000: result <= reg1_i + reg2_i;  //Ö´ĞĞÏàÓ¦µÄÔËËã
+                    3'b000: result <= reg1_i + reg2_i;  // æ‰§è¡Œå…·ä½“çš„è¿ç®—
                     3'b001: result <= reg1_i << reg2_i;
                     3'b100: result <= reg1_i ^ reg2_i;
                     3'b110: result <= reg1_i | reg2_i;
@@ -68,7 +68,7 @@ always @ (*) begin         //Í¨¹ıÒëÂë½×¶Î·¢ËÍ¹ıÀ´µÄĞÅÏ¢È·¶¨¾ßÌåµÄÔËËã²Ù×÷
     end
 end
 
-always @ (*) begin           //½«ÔËËã½á¹û·¢ËÍµ½ÏÂÒ»½×¶Î
+always @ (*) begin           // å°†è¿ç®—ç»“æœå‘é€åˆ°ä¸‹ä¸€é˜¶æ®µ
     wd_o <= wd_i;
     wreg_o <= wreg_i;
     case(aluop_i)
