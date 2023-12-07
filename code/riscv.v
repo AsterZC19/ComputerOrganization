@@ -72,35 +72,37 @@ wire [31:0]             reg2_data;
 wire [4:0]              reg1_addr;
 wire [4:0]              reg2_addr;
 
-                        pc_reg pc_reg0(
-                            .clk(clk),
-                            .rst_n(rst_n),
-                            .pc(pc),
-                            .ce(rom_ce_o)
-                        );
-                        assign rom_addr_o = pc;
-                        
-                        if_id if_id0(
-                            .clk(clk),
-                            .rst_n(rst_n),
-                            .if_pc(pc),
-                            .if_inst(rom_data_i),
-                            .id_pc(id_pc_i),
-                            .id_inst(id_inst_i)
-                        );
-                        regfile regfile0(
-                            .clk(clk),
-                            .rst_n(rst_n),
-                            .we(wb_wreg_i),
-                            .waddr(wb_wd_i),
-                            .wdata(wb_wdata_i),
-                            .re1(reg1_read),
-                            .raddr1(reg1_addr),
-                            .rdata1(reg1_data),
-                            .re2(reg2_read),
-                            .raddr2(reg2_addr),
-                            .rdata2(reg2_data)
-                        );
+
+
+pc_reg pc_reg0(
+    .clk(clk),
+    .rst_n(rst_n),
+    .pc(pc),
+    .ce(rom_ce_o)
+);
+assign rom_addr_o = pc;
+
+if_id if_id0(
+    .clk(clk),
+    .rst_n(rst_n),
+    .if_pc(pc),
+    .if_inst(rom_data_i),
+    .id_pc(id_pc_i),
+    .id_inst(id_inst_i)
+);
+regfile regfile0(
+    .clk(clk),
+    .rst_n(rst_n),
+    .we(wb_wreg_i),
+    .waddr(wb_wd_i),
+    .wdata(wb_wdata_i),
+    .re1(reg1_read),
+    .raddr1(reg1_addr),
+    .rdata1(reg1_data),
+    .re2(reg2_read),
+    .raddr2(reg2_addr),
+    .rdata2(reg2_data)
+);
 id id0(
     .rst_n(rst_n),
     .pc_i(id_pc_i),
