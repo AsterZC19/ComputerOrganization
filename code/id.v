@@ -42,7 +42,10 @@ module id(
         output reg [31:0] reg2_o,
         output reg [4:0]  wd_o,
         output reg        wreg_o,
-        
+
+        output reg [6:0]  aluc_o,       // 移位类型 指令的高七位
+        output reg        wmem_o,       // 是否写内存
+        output reg        rmem_o,       // 是否读内存
         // 解决流水线冲突
         input             ex_wreg_i,
         input [31:0]      ex_wdata_i,
@@ -51,6 +54,8 @@ module id(
         input             mem_wreg_i,
         input [31:0]      mem_wdata_i,
         input [4:0]       mem_wd_i
+
+        output reg [31:0] imm_o
     );
 
 wire [6:0] op  = inst_i[6:0];            // 运算类型
@@ -69,6 +74,11 @@ always @ (*) begin
         reg1_addr_o <= 0;
         reg2_addr_o <= 0;
         imm <= 0;
+        imm_o <= 0;
+
+        aluc_o <= 0;
+        wmem_o <= 0;
+        rmem_o <= 0;
     end
     else begin
         aluop_o <= 0;
@@ -81,10 +91,15 @@ always @ (*) begin
         reg2_addr_o <= inst_i[24:20];
         imm <= 0;
         
+        imm_o <= imm;
+        aluc_o <= 0;
+        wmem_o <= 0;
+        rmem_o <= 0;
+        
         case(op)
             7'b0010011: begin                               //立即数操作
                 case (op1)
-                    3'b000,3'b100,3'b110,3'b111: begin      // addi,xori,ori,andi
+                    3'b000,3'b100,3'b110,3'b111,3'b010,3'b011: begin      // addi,xori,ori,andi,slti,sltiu
                         wreg_o <= 1'b1;                     // 是否写目的寄存器
                         aluop_o <= op;                      // 运算类型
                         alusel_o <= op1;                    // 运算方式
@@ -92,13 +107,14 @@ always @ (*) begin
                         reg2_read_o <= 1'b0;                // 是否读操作数2
                         imm <= {{20{inst_i[31]}} , inst_i[31:20]};  // 立即数扩展
                     end
-                    3'b001: begin                           // slli
+                    3'b001: begin                           // slli,srli,srai
                         wreg_o <= 1'b1;                     // 是否写目的寄存器
                         aluop_o <= op;                      // 运算类型
                         alusel_o <= op1;                    // 运算方式
                         reg1_read_o <= 1'b1;                // 是否读操作数1
                         reg2_read_o <= 1'b0;                // 是否读操作数2
                         imm <= inst_i[24:20];               // 移位量
+                        aluc_o <= inst_i[31:25];            // 移位类型
                     end
                     default: begin
                     end
@@ -107,10 +123,11 @@ always @ (*) begin
             
             7'b0110011: begin                                 // 运算操作
                 case(op1)
-                    3'b000,3'b001,3'b100,3'b110,3'b111: begin // add,sll,xor,or,and
+                    3'b000,3'b001,3'b100,3'b110,3'b111,3'b101,3'b010,3'b011: begin // add,sub,sll,xor,or,and,srl,sra,slt,sltu
                         wreg_o <= 1'b1;
                         aluop_o <= op;
                         alusel_o <= op1;
+                        aluc_o <= inst_i[31:25];
                         reg1_read_o <= 1'b1;
                         reg2_read_o <= 1'b1;                      
                     end
@@ -118,6 +135,37 @@ always @ (*) begin
                     end
                 endcase                
             end
+
+            7'b1110100: begin                         // auipc
+                // add upper immediate to pc
+
+            end
+
+            7'b0100011: begin                         // s型
+                case(op1)
+                    3'b010,3'b001,3'b000: begin        // sb,sh,sw
+                        wreg_o <= 1'b0;
+                        aluop_o <= op;
+                        alusel_o <= op1;
+                        reg1_read_o <= 1'b1;
+                        reg2_read_o <= 1'b1;
+                        imm <= {{20{inst_i[31]}} , inst_i[31:25], inst_i[11:7]};
+                        wmem_o <= 1'b1;
+                        rmem_o <= 1'b0;
+                    end
+                endcase
+            end
+
+            7'b0110111: begin                        // lui
+                wreg_o <= 1'b1;
+                aluop_o <= op;
+                reg1_read_o <= 1'b0;
+                reg2_read_o <= 1'b0;
+                imm <= inst_i[31:12];
+            end
+
+
+
             default: begin
             end
         endcase
