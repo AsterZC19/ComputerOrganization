@@ -140,7 +140,11 @@ always @ (*) begin
 
             7'b1110100: begin                         // auipc
                 // add upper immediate to pc
-
+                wreg_o <= 1'b1;
+                aluop_o <= op;
+                reg1_read_o <= 1'b0;
+                reg2_read_o <= 1'b0;
+                imm <= inst_i[31:12];
             end
 
             7'b0100011: begin                         // s型
@@ -192,6 +196,16 @@ always @ (*) begin
                         wmem_o <= 1'b0;
                     end
                     3'b100: begin                   // lbu
+                        wreg_o <= 1'b1;
+                        aluop_o <= op;
+                        alusel_o <= op1;
+                        reg1_read_o <= 1'b1;
+                        reg2_read_o <= 1'b0;
+                        mem_addr_o <= {{20{inst_i[31]}} , inst_i[31:20]};
+                        rmem_o <= 1'b1;
+                        wmem_o <= 1'b0;
+                    end
+                    3'b101: begin                   // lhu
                         wreg_o <= 1'b1;
                         aluop_o <= op;
                         alusel_o <= op1;
