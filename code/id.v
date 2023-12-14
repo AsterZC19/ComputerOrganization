@@ -43,6 +43,8 @@ module id(
         output reg [4:0]  wd_o,
         output reg        wreg_o,
 
+        output reg [31:0] mem_addr_o,   // 访存地址
+        output reg [31:0] inst_o,       
         output reg [6:0]  aluc_o,       // 移位类型 指令的高七位
         output reg        wmem_o,       // 是否写内存
         output reg        rmem_o,       // 是否读内存
@@ -164,8 +166,45 @@ always @ (*) begin
                 imm <= inst_i[31:12];
             end
 
+            7'b1100011: begin                        // b型
+                case(op1)
+                    3'b000,3'b001,3'b100,3'b101,3'b110,3'b111: begin // beq,bne,blt,bge,bltu,bgeu
+                        wreg_o <= 1'b0;
+                        aluop_o <= op;
+                        alusel_o <= op1;
+                        reg1_read_o <= 1'b0;
+                        reg2_read_o <= 1'b0;
+                        imm <= {{20{inst_i[31]}} , inst_i[31], inst_i[7], inst_i[30:25], inst_i[11:8]};
+                    end
+                endcase
+            end
 
+            7'b0000011: begin
+                case(op1)
+                    3'b010,3'b001,3'b000: begin     // lw, lh, lb
+                        wreg_o <= 1'b1;
+                        aluop_o <= op;
+                        alusel_o <= op1;
+                        reg1_read_o <= 1'b1;
+                        reg2_read_o <= 1'b0;
+                        mem_addr_o <= {{20{inst_i[31]}} , inst_i[31:20]};
+                        rmem_o <= 1'b1;
+                        wmem_o <= 1'b0;
+                    end
+                    3'b100: begin                   // lbu
+                        wreg_o <= 1'b1;
+                        aluop_o <= op;
+                        alusel_o <= op1;
+                        reg1_read_o <= 1'b1;
+                        reg2_read_o <= 1'b0;
+                        mem_addr_o <= {{20{inst_i[31]}} , inst_i[31:20]};
+                        rmem_o <= 1'b1;
+                        wmem_o <= 1'b0;
+                    end
+                endcase
+            end
 
+            
             default: begin
             end
         endcase

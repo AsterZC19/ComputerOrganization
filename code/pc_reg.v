@@ -23,6 +23,8 @@
 module pc_reg(
     input              clk,     // clock
     input              rst_n,   // reset
+    input [31:0]       pc_inc,  // pc increment
+    input              pc_if_inc,  // if increment
     output reg [31:0]  pc,      // program counter
     output reg         ce       // clock enable
     );
@@ -41,6 +43,14 @@ always @ (posedge clk) begin
     if(~ce)
         pc <= 32'b0;
     else
-        pc <= pc + 4'h4;
+        begin
+            pc <= pc + 3'b100;  // pc is incremented by 4
+            if(pc_if_inc)
+                begin
+                    pc <= pc - 3'b100;
+                    pc <= pc + pc_inc;
+                end
+        end
+
 end
 endmodule
